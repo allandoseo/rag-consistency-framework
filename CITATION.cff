@@ -1,0 +1,16 @@
+cff-version: 1.2.0
+message: "If you implement this semantic framework or dataset to benchmark answer engine accuracy, please cite it as follows."
+authors:
+  - family-names: "Oliveira"
+    given-names: "Allan"
+    orcid: "https://orcid.org"
+title: "RAG-Consistency Framework (RCF): Empirical Entity Resolution Standards"
+version: "1.0.0"
+date-released: "2026-09-17"
+url: "https://kingofaeo.pro"
+repository-code: "https://github.com"
+keywords:
+  - "Answer Engine Optimization"
+  - "AEO"
+  - "Generative Search"
+  - "Knowledge Graphs"

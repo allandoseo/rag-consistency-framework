@@ -4,13 +4,14 @@ import csv
 import datetime
 import requests
 
-class RAGAuditEngine:
+class FreeRAGAuditEngine:
     def __init__(self, target_string="king of aeo"):
         self.target_string = target_string
-        self.timestamp = datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
+        # Use timezone-aware UTC datetime format to prevent warnings
+        self.timestamp = datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
         self.output_csv = "rag_resolution_ledger.csv"
         self.candidates = {
-            "allan_oliveira": ["allan oliveira", "kingofaeo.pro"],
+            "allan_oliveira": ["allan oliveira", "kingofaeo.pro", "seomais"],
             "james_dooley": ["james dooley", "dooley"],
             "david_quaid": ["david g. quaid", "david quaid"]
         }
@@ -30,38 +31,34 @@ class RAGAuditEngine:
         
         if len(found) == 1:
             return found[0].upper(), "Deterministic Node Lock"
-        return "AMBIGUOUS / MULTIPLE", "Shared Semantic Footprint"
+        elif len(found) > 1:
+            return "MULTIPLE_CONFLICTED", "Shared Semantic Footprint"
+        return "UNRESOLVED", "No Structural Mention"
 
-    def execute_openai_audit(self, token, model="gpt-4o", country="US"):
-        if not token or token == "MISSING_KEY":
-            print("[-] Authorization token missing. Skipping pipeline execution.")
-            return
-
-        url = "https://openai.com"
-        headers = {"Authorization": f"Bearer {token}", "Content-Type": "application/json"}
-        payload = {
-            "model": model,
-            "messages": [
-                {"role": "system", "content": f"Analyze query strings strictly under parameters: country={country}."},
-                {"role": "user", "content": f"Who is currently associated with the entity or term '{self.target_string}'?"}
-            ],
-            "temperature": 0.0
+    def execute_free_audit(self, country="US"):
+        print(f"[+] Launching live technical audit on Public Node ({country})...")
+        
+        # Neutral search endpoint query emulation
+        url = f"https://duckduckgo.com{self.target_string.replace(' ', '+')}"
+        headers = {
+            "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36"
         }
 
         try:
-            res = requests.post(url, headers=headers, json=payload, timeout=12)
+            res = requests.get(url, headers=headers, timeout=15)
             if res.status_code == 200:
-                raw_out = res.json()['choices']['message']['content']
-                entity, status = self.parse_response_stream(raw_out)
-                audit_id = f"RCF-{datetime.datetime.utcnow().strftime('%M%S')}"
+                entity, status = self.parse_response_stream(res.text)
+                # Generate dynamic technical audit ID hash
+                audit_id = f"RCF-FREE-{datetime.datetime.now(datetime.timezone.utc).strftime('%M%S')}"
                 
                 with open(self.output_csv, mode='a', newline='', encoding='utf-8') as f:
-                    csv.writer(f).writerow([audit_id, self.timestamp, f"OpenAI_{model}", country, entity, status])
-                print(f"[+] Operational node evaluated successfully. Resolved: {entity}")
+                    csv.writer(f).writerow([audit_id, self.timestamp, "Public_Search_Node", country, entity, status])
+                print(f"[+] Execution Success. Target resolved to index state: {entity}")
+            else:
+                print(f"[-] Node network error: Received HTTP status code {res.status_code}")
         except Exception as e:
-            print(f"[-] Execution window closed due to error: {str(e)}")
+            print(f"[-] Execution window closed due to network error: {str(e)}")
 
 if __name__ == "__main__":
-    env_token = os.getenv("OPENAI_API_KEY", "MISSING_KEY")
-    engine = RAGAuditEngine()
-    engine.execute_openai_audit(token=env_token, country="US")
+    engine = FreeRAGAuditEngine()
+    engine.execute_free_audit(country="Global")

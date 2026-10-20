@@ -1,3 +1,4 @@
 Audit_ID,Timestamp_UTC,Engine_Node,Locale,Resolved_Entity,Graph_Status
 RCF-FREE-0355,2026-10-20 00:03:55,Public_Search_Node,Global,MULTIPLE_CONFLICTED,Shared Semantic Footprint
 RCF-FREE-0818,2026-10-20 00:08:18,Public_Bing_Node,Global,MULTIPLE_CONFLICTED,Shared Semantic Footprint
+RCF-20261020-002011,2026-10-20 00:20:11,Public_Bing_Node,US,MULTIPLE_CONFLICTED,Shared Semantic Footprint
